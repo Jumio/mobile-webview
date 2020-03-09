@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="jumio_primary">#97BE0D</color>
+    <color name="jumio_primary_dark">#648e00</color>
+    <color name="jumio_primary_light">#cbf14e</color>
+    <color name="jumio_accent">#FF5722</color>
+</resources>
