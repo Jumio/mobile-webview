@@ -1,13 +1,11 @@
 package com.jumio.nvw4
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
-import com.google.android.material.snackbar.Snackbar
-import androidx.appcompat.app.AppCompatActivity;
-import android.view.Menu
-import android.view.MenuItem
+import androidx.appcompat.app.AppCompatActivity
 import com.jumio.nvw4.fragments.SettingsFragment
 import com.jumio.nvw4.fragments.WebviewFragment
-
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
@@ -32,5 +30,4 @@ class MainActivity : AppCompatActivity() {
             addToBackStack("webview").
             commitAllowingStateLoss()
     }
-
 }
