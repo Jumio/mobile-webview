@@ -14,13 +14,14 @@ class ViewController: UIViewController {
 
     @IBOutlet weak var webView: WKWebView!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
-
+    var urlString = ""
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         webView.navigationDelegate = self
         
         // set redirect url as string
-        let url = URL (string: "https://www.google.com")
+        let url = URL (string: self.urlString)
         
         // create request
         let request = URLRequest(url: url!)
@@ -37,7 +38,8 @@ class ViewController: UIViewController {
     }
 }
 
-extension ViewController: WKNavigationDelegate{
+// handles WebView
+extension ViewController: WKNavigationDelegate {
     
     // start animating loading indicator
     func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {

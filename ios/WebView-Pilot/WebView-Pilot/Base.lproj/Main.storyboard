@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="15705" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
-    <device id="retina6_1" orientation="portrait" appearance="light"/>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="15705" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="9It-Vq-lHU">
+    <device id="retina6_5" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15706"/>
@@ -13,37 +13,35 @@
             <objects>
                 <viewController id="BYZ-38-t0r" customClass="ViewController" customModule="WebView_Pilot" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="842"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <wkWebView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="pai-nQ-2az">
-                                <rect key="frame" x="0.0" y="44" width="414" height="818"/>
+                            <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="whiteLarge" translatesAutoresizingMaskIntoConstraints="NO" id="YMk-M7-5Sg">
+                                <rect key="frame" x="187" y="401" width="40" height="40"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="40" id="Nix-y8-H47"/>
+                                    <constraint firstAttribute="width" constant="40" id="T1b-te-HgO"/>
+                                </constraints>
+                                <color key="color" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            </activityIndicatorView>
+                            <wkWebView contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="pai-nQ-2az">
+                                <rect key="frame" x="0.0" y="-16" width="414" height="808"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" red="0.36078431370000003" green="0.38823529410000002" blue="0.4039215686" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <wkWebViewConfiguration key="configuration">
                                     <audiovisualMediaTypes key="mediaTypesRequiringUserActionForPlayback" none="YES"/>
                                     <wkPreferences key="preferences"/>
                                 </wkWebViewConfiguration>
                             </wkWebView>
-                            <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="whiteLarge" translatesAutoresizingMaskIntoConstraints="NO" id="YMk-M7-5Sg">
-                                <rect key="frame" x="188.5" y="429.5" width="37" height="37"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="37" id="Nix-y8-H47"/>
-                                    <constraint firstAttribute="width" constant="37" id="T1b-te-HgO"/>
-                                </constraints>
-                                <color key="color" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                            </activityIndicatorView>
                         </subviews>
                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                         <constraints>
-                            <constraint firstItem="YMk-M7-5Sg" firstAttribute="centerX" secondItem="pai-nQ-2az" secondAttribute="centerX" id="0CA-s7-eDC"/>
-                            <constraint firstItem="pai-nQ-2az" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="JMI-uT-Qgz"/>
-                            <constraint firstItem="pai-nQ-2az" firstAttribute="trailing" secondItem="6Tk-OE-BBY" secondAttribute="trailing" id="NJ3-rU-5BG"/>
-                            <constraint firstItem="pai-nQ-2az" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" id="SoU-TN-we3"/>
-                            <constraint firstItem="pai-nQ-2az" firstAttribute="bottom" secondItem="6Tk-OE-BBY" secondAttribute="bottom" id="fA5-Yy-vlW"/>
-                            <constraint firstItem="YMk-M7-5Sg" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="wAq-DO-ZLf"/>
+                            <constraint firstItem="YMk-M7-5Sg" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="Ybx-u2-Eq6"/>
+                            <constraint firstItem="YMk-M7-5Sg" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="bxP-RR-PPg"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
+                    <navigationItem key="navigationItem" id="sxD-Pk-bOP"/>
                     <connections>
                         <outlet property="activityIndicator" destination="YMk-M7-5Sg" id="QQN-4w-rhH"/>
                         <outlet property="webView" destination="pai-nQ-2az" id="RQE-DC-FlT"/>
@@ -51,7 +49,52 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="137.68115942028987" y="138.61607142857142"/>
+            <point key="canvasLocation" x="-371.01449275362324" y="105.80357142857143"/>
+        </scene>
+        <!--Start View Controller-->
+        <scene sceneID="lFT-Zy-EZh">
+            <objects>
+                <viewController id="9It-Vq-lHU" customClass="StartViewController" customModule="WebView_Pilot" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="kI5-CK-y5Z">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <subviews>
+                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Enter URL here..." textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="8dK-e4-7yR">
+                                <rect key="frame" x="16" y="427" width="382" height="34"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits"/>
+                            </textField>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="SAx-Se-l3F">
+                                <rect key="frame" x="126" y="485" width="163" height="34"/>
+                                <color key="backgroundColor" systemColor="systemGreenColor" red="0.20392156859999999" green="0.78039215689999997" blue="0.34901960780000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="18"/>
+                                <state key="normal" title="Load">
+                                    <color key="titleColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                                </state>
+                                <connections>
+                                    <action selector="done:" destination="9It-Vq-lHU" eventType="touchUpInside" id="70p-ha-oDi"/>
+                                    <segue destination="BYZ-38-t0r" kind="presentation" identifier="urlSegue" id="qng-rg-OvZ"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                        <constraints>
+                            <constraint firstItem="LaC-a0-qMM" firstAttribute="trailing" secondItem="SAx-Se-l3F" secondAttribute="trailing" constant="125" id="1yz-L1-OZo"/>
+                            <constraint firstItem="8dK-e4-7yR" firstAttribute="leading" secondItem="LaC-a0-qMM" secondAttribute="leading" constant="16" id="9Kv-EB-zNO"/>
+                            <constraint firstItem="8dK-e4-7yR" firstAttribute="centerX" secondItem="kI5-CK-y5Z" secondAttribute="centerX" id="B3y-yt-DZr"/>
+                            <constraint firstItem="LaC-a0-qMM" firstAttribute="trailing" secondItem="8dK-e4-7yR" secondAttribute="trailing" constant="16" id="i74-Ll-T3j"/>
+                            <constraint firstItem="SAx-Se-l3F" firstAttribute="top" secondItem="8dK-e4-7yR" secondAttribute="bottom" constant="24" id="lYJ-zC-MnN"/>
+                            <constraint firstItem="SAx-Se-l3F" firstAttribute="leading" secondItem="LaC-a0-qMM" secondAttribute="leading" constant="126" id="p2c-FL-42C"/>
+                            <constraint firstItem="LaC-a0-qMM" firstAttribute="bottom" secondItem="SAx-Se-l3F" secondAttribute="bottom" constant="343" id="wYu-8L-lR0"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="LaC-a0-qMM"/>
+                    </view>
+                    <connections>
+                        <outlet property="inputField" destination="8dK-e4-7yR" id="L43-26-7tC"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="0dY-O6-1fD" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-1147.5" y="105.63380281690141"/>
         </scene>
     </scenes>
 </document>
