@@ -16,6 +16,7 @@
 		5C93207624192849008C7C0C /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5C93207424192849008C7C0C /* LaunchScreen.storyboard */; };
 		5C9320812419284A008C7C0C /* WebView_PilotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C9320802419284A008C7C0C /* WebView_PilotTests.swift */; };
 		5C93208C2419284A008C7C0C /* WebView_PilotUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C93208B2419284A008C7C0C /* WebView_PilotUITests.swift */; };
+		5CBCD6D32422150800EB58A2 /* injectJavascript.html in Resources */ = {isa = PBXBuildFile; fileRef = 5CBCD6D22422150800EB58A2 /* injectJavascript.html */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -51,6 +52,7 @@
 		5C9320872419284A008C7C0C /* WebView-PilotUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "WebView-PilotUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		5C93208B2419284A008C7C0C /* WebView_PilotUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebView_PilotUITests.swift; sourceTree = "<group>"; };
 		5C93208D2419284A008C7C0C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		5CBCD6D22422150800EB58A2 /* injectJavascript.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = injectJavascript.html; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -118,6 +120,7 @@
 				5C93207224192849008C7C0C /* Assets.xcassets */,
 				5C93207424192849008C7C0C /* LaunchScreen.storyboard */,
 				5C93207724192849008C7C0C /* Info.plist */,
+				5CBCD6D22422150800EB58A2 /* injectJavascript.html */,
 			);
 			path = "WebView-Pilot";
 			sourceTree = "<group>";
@@ -245,6 +248,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				5C93207624192849008C7C0C /* LaunchScreen.storyboard in Resources */,
+				5CBCD6D32422150800EB58A2 /* injectJavascript.html in Resources */,
 				5C93207324192849008C7C0C /* Assets.xcassets in Resources */,
 				5C93207124192846008C7C0C /* Main.storyboard in Resources */,
 			);

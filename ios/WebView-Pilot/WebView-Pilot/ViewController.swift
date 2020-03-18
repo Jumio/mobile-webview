@@ -20,11 +20,13 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         webView.navigationDelegate = self
         
-        // set redirect url as string
-        let url = URL (string: self.urlString)
-        
+        // simple url without JS
+        guard let url = URL(string: self.urlString) else {
+            return
+        }
+      
         // create request
-        let request = URLRequest(url: url!)
+        let request = URLRequest(url: url)
                 
         // load request
         webView.load(request)
@@ -54,21 +56,36 @@ class ViewController: UIViewController {
 // handles WebView
 extension ViewController: WKNavigationDelegate {
     
-    // start animating loading indicator
+    // view has started loading
     func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
         activityIndicator.startAnimating()
     }
     
-    // stop loading indicator when page is loaded
+    // view has finished loading
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+        // loading indicator
         activityIndicator.stopAnimating()
-             activityIndicator.hidesWhenStopped = true
+        activityIndicator.hidesWhenStopped = true
+        
+        // put any javascript string in variable injectFunction (between three """)
+        let injectFunction = """
+                  window.__test = "placeholder javascript string"
+              """
+        
+        // executes javascript
+        self.webView?.evaluateJavaScript(injectFunction) { _, error in
+            if let error = error {
+                print("ERROR while evaluating javascript \(error)")
+            }
+            print("executed injected javascript")
+        }
     }
+    
     
     // workaround in case server has no certificate
     // which means page won't open because it's not safe
     func webView(_ webView: WKWebView, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
-        print("Allow all")
+        print("Allow all, even without credentials")
         guard let serverTrust = challenge.protectionSpace.serverTrust else {
             completionHandler(.cancelAuthenticationChallenge, nil)
             return
@@ -78,5 +95,3 @@ extension ViewController: WKNavigationDelegate {
         completionHandler(.useCredential, URLCredential(trust: serverTrust))
     }
 }
-
-
