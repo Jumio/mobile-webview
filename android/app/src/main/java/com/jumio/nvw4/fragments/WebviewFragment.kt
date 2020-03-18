@@ -10,6 +10,7 @@ import android.net.Uri
 import android.net.http.SslError
 import android.os.Build
 import android.os.Bundle
+import android.system.Os.open
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -23,6 +24,8 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.jumio.nvw4.R
 import kotlinx.android.synthetic.main.fragment_webview.*
+import java.io.BufferedReader
+import java.nio.channels.AsynchronousFileChannel.open
 
 
 class WebviewFragment : Fragment() {
@@ -34,6 +37,13 @@ class WebviewFragment : Fragment() {
         var uploadMessage: ValueCallback<Array<Uri>>? = null
         const val REQUEST_SELECT_FILE = 1002
         private const val FILECHOOSER_RESULTCODE = 1003
+
+        //Inject javascript code here that is executed after the page is loaded
+        val injectFunction = """
+        function () {
+            document.bgColor = "#454343";
+        }
+        """.trimIndent()
 
         private var mFilePathCallback: ValueCallback<Array<Uri>>? = null
 
@@ -85,6 +95,10 @@ class WebviewFragment : Fragment() {
                 error: SslError?
             ) {
                 handler?.proceed()
+            }
+            override fun onPageFinished(view: WebView, url: String?) {
+                // Put your javascript function that you want to execute here
+                webview.loadUrl("javascript:($injectFunction)()")
             }
         }
         webview.webChromeClient = object : WebChromeClient() {
