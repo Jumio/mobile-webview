@@ -41,7 +41,9 @@ class WebviewFragment : Fragment() {
         //Inject javascript code here that is executed after the page is loaded
         val injectFunction = """
         function () {
-            document.bgColor = "#454343";
+            window['__NVW_WEBVIEW__'] = {
+            isAndroid: true
+            }
         }
         """.trimIndent()
 
@@ -96,7 +98,8 @@ class WebviewFragment : Fragment() {
             ) {
                 handler?.proceed()
             }
-            override fun onPageFinished(view: WebView, url: String?) {
+
+            override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
                 // Put your javascript function that you want to execute here
                 webview.loadUrl("javascript:($injectFunction)()")
             }
