@@ -59,26 +59,26 @@ extension ViewController: WKNavigationDelegate {
     // view has started loading
     func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
         activityIndicator.startAnimating()
-    }
-    
-    // view has finished loading
-    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-        // loading indicator
-        activityIndicator.stopAnimating()
-        activityIndicator.hidesWhenStopped = true
         
-        // put any javascript string in variable injectFunction (between three """)
+        // put any javascript string in variable injectFunction (between the three """)
         let injectFunction = """
-                  window.__test = "placeholder javascript string"
-              """
-        
+            window.__test = "placeholder javascript string"
+            """
+               
         // executes javascript
         self.webView?.evaluateJavaScript(injectFunction) { _, error in
             if let error = error {
                 print("ERROR while evaluating javascript \(error)")
-            }
+                }
             print("executed injected javascript")
+            }
         }
+    
+        // view has finished loading
+        func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+            // loading indicator
+            activityIndicator.stopAnimating()
+            activityIndicator.hidesWhenStopped = true
     }
     
     
