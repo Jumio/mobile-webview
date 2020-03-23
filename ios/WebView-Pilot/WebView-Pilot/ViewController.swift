@@ -62,7 +62,7 @@ extension ViewController: WKNavigationDelegate {
         
         // put any javascript string in variable injectFunction (between the three """)
         let injectFunction = """
-            window.__test = "placeholder javascript string"
+            (function() { window['__NVW_WEBVIEW__'] = { isIOS: true })()
             """
                
         // executes javascript
@@ -95,3 +95,5 @@ extension ViewController: WKNavigationDelegate {
         completionHandler(.useCredential, URLCredential(trust: serverTrust))
     }
 }
+
+
