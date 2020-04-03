@@ -25,8 +25,7 @@ class ViewController: UIViewController {
             return
         }
         
-        let userContentController = WKUserContentController()
-        userContentController.add(self, name: "__NVW_WEBVIEW_HANDLER__")
+        webView.configuration.userContentController.add(self, name: "__NVW_WEBVIEW_HANDLER__")
               
         // create request
         let request = URLRequest(url: url)
