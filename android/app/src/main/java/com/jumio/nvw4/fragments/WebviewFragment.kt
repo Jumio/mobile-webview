@@ -10,7 +10,6 @@ import android.net.Uri
 import android.net.http.SslError
 import android.os.Build
 import android.os.Bundle
-import android.system.Os.open
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -24,8 +23,6 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.jumio.nvw4.R
 import kotlinx.android.synthetic.main.fragment_webview.*
-import java.io.BufferedReader
-import java.nio.channels.AsynchronousFileChannel.open
 
 
 class WebviewFragment : Fragment() {
@@ -81,6 +78,7 @@ class WebviewFragment : Fragment() {
         webview.settings.javaScriptCanOpenWindowsAutomatically = true
         webview.settings.mediaPlaybackRequiresUserGesture = false
         webview.settings.domStorageEnabled = true
+        webview.addJavascriptInterface(PostMessageHandler(), "__NVW_WEBVIEW_HANDLER__")
         webview.webViewClient = object : WebViewClient() {
             override fun onReceivedError(
                 view: WebView?,
@@ -244,5 +242,17 @@ class WebviewFragment : Fragment() {
             ).show()
         }
         super.onActivityResult(requestCode, resultCode, intent)
+    }
+    class PostMessageHandler {
+        @JavascriptInterface
+        fun postMessage(json: String?, transferList: String?): Boolean {
+            /*
+                There we're handling messages from NVW4 client, its the same as for iFrame logging;
+                More details you can find there:
+                https://github.com/Jumio/implementation-guides/blob/master/netverify/netverify-web-v4.md#optional-iframe-logging
+            */
+            Log.d(TAG, "postMessage triggered, json: " + json.toString())
+            return true
+        }
     }
 }
