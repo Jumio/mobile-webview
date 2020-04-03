@@ -76,7 +76,7 @@ extension ViewController: WKNavigationDelegate {
         
         // put any javascript string in variable injectFunction (between the three """)
         let injectFunction = """
-            (function() { window['__NVW_WEBVIEW__'] = { isIOS: true })()
+            (function() { window['__NVW_WEBVIEW__'] = true})()
             """
                
         // executes javascript
