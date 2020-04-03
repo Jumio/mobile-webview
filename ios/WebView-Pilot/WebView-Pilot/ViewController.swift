@@ -24,6 +24,13 @@ class ViewController: UIViewController {
         guard let url = URL(string: self.urlString) else {
             return
         }
+        
+        let config = WKWebViewConfiguration()
+        let userContentController = WKUserContentController()
+        
+        userContentController.add(self, name: "__NVW_WEBVIEW_HANDLER__")
+        
+        config.userContentController = userContentController
       
         // create request
         let request = URLRequest(url: url)
@@ -50,6 +57,17 @@ class ViewController: UIViewController {
         viewControllerToPresent.popoverPresentationController?.sourceView = webView
         viewControllerToPresent.popoverPresentationController?.sourceRect = CGRect(x: webView.center.x, y: webView.center.y, width: 1, height: 1)
       }
+    }
+}
+
+// handles PostMessages
+extension ViewController: WKScriptMessageHandler {
+    func userContentController(_ userController: WKUserContentController, didReceive message: WKScriptMessage) {
+        if message.name == "__NVW_WEBVIEW_HANDLER__", let messageBody = message.body as? String {
+                // do something here with message
+                // print is only an example
+                print(messageBody)
+        }
     }
 }
 
@@ -95,5 +113,3 @@ extension ViewController: WKNavigationDelegate {
         completionHandler(.useCredential, URLCredential(trust: serverTrust))
     }
 }
-
-
