@@ -32,13 +32,6 @@ class ViewController: UIViewController {
                 
         // load request
         webView.load(request)
-        
-        // ask for camera permissions
-        AVCaptureDevice.requestAccess(for: .video) { (granted) in
-            if !granted {
-                print("Camera permission denied")
-            }
-        }
     }
     
     override func present(_ viewControllerToPresent: UIViewController, animated flag: Bool, completion: (() -> Void)? = nil) {
