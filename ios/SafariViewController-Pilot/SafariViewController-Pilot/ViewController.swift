@@ -2,9 +2,7 @@
 //  ViewController.swift
 //  SafariViewController-Pilot
 //
-//  Created by Bernadette Theuretzbachner on 10.04.20.
-//  Copyright © 2020 Bernadette Theuretzbachner. All rights reserved.
-//
+
 import AVFoundation
 import SafariServices
 import UIKit
@@ -25,11 +23,11 @@ class ViewController: UIViewController {
         guard let URL = URL(string: stringURL) else {
             return
         }
-
+        
         let safariVC = SFSafariViewController(url: URL)
         present(safariVC, animated: true)
     }
-        
+    
     func safariViewControllerDidFinish(_ safariVC: SFSafariViewController) {
         safariVC.dismiss(animated: true, completion: nil)
     }

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="15705" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="9It-Vq-lHU">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="16097" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="9It-Vq-lHU">
     <device id="retina6_5" orientation="portrait" appearance="light"/>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15706"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16087"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -82,7 +82,6 @@
                             <constraint firstItem="LaC-a0-qMM" firstAttribute="trailing" secondItem="SAx-Se-l3F" secondAttribute="trailing" constant="125" id="1yz-L1-OZo"/>
                             <constraint firstItem="8dK-e4-7yR" firstAttribute="leading" secondItem="LaC-a0-qMM" secondAttribute="leading" constant="16" id="9Kv-EB-zNO"/>
                             <constraint firstItem="8dK-e4-7yR" firstAttribute="centerX" secondItem="kI5-CK-y5Z" secondAttribute="centerX" id="B3y-yt-DZr"/>
-                            <constraint firstItem="LaC-a0-qMM" firstAttribute="trailing" secondItem="8dK-e4-7yR" secondAttribute="trailing" constant="16" id="i74-Ll-T3j"/>
                             <constraint firstItem="SAx-Se-l3F" firstAttribute="top" secondItem="8dK-e4-7yR" secondAttribute="bottom" constant="24" id="lYJ-zC-MnN"/>
                             <constraint firstItem="SAx-Se-l3F" firstAttribute="leading" secondItem="LaC-a0-qMM" secondAttribute="leading" constant="126" id="p2c-FL-42C"/>
                             <constraint firstItem="LaC-a0-qMM" firstAttribute="bottom" secondItem="SAx-Se-l3F" secondAttribute="bottom" constant="343" id="wYu-8L-lR0"/>

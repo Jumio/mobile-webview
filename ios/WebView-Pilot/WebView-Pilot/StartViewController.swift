@@ -2,9 +2,6 @@
 //  StartViewController.swift
 //  WebView-Pilot
 //
-//  Created by Bernadette Theuretzbachner on 12.03.20.
-//  Copyright © 2020 Bernadette Theuretzbachner. All rights reserved.
-//
 
 import UIKit
 

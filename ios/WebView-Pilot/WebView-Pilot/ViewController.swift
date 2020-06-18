@@ -2,16 +2,13 @@
 //  ViewController.swift
 //  WebView-Pilot
 //
-//  Created by Bernadette Theuretzbachner on 11.03.20.
-//  Copyright © 2020 Bernadette Theuretzbachner. All rights reserved.
-//
 
 import UIKit
 import WebKit
 import AVFoundation
 
 class ViewController: UIViewController {
-
+    
     @IBOutlet weak var webView: WKWebView!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     var urlString = ""
@@ -26,25 +23,25 @@ class ViewController: UIViewController {
         }
         
         webView.configuration.userContentController.add(self, name: "__NVW_WEBVIEW_HANDLER__")
-              
+        
         // create request
         let request = URLRequest(url: url)
-                
+        
         // load request
         webView.load(request)
     }
     
     override func present(_ viewControllerToPresent: UIViewController, animated flag: Bool, completion: (() -> Void)? = nil) {
-      setUIDocumentMenuViewControllerSoureViewsIfNeeded(viewControllerToPresent)
-      super.present(viewControllerToPresent, animated: flag, completion: completion)
+        setUIDocumentMenuViewControllerSoureViewsIfNeeded(viewControllerToPresent)
+        super.present(viewControllerToPresent, animated: flag, completion: completion)
     }
 
     func setUIDocumentMenuViewControllerSoureViewsIfNeeded(_ viewControllerToPresent: UIViewController) {
-      if #available(iOS 13, *), viewControllerToPresent is UIDocumentMenuViewController && UIDevice.current.userInterfaceIdiom == .phone {
-        // Prevent the app from crashing if the WKWebView decides to present a UIDocumentMenuViewController while it self is presented modally.
-        viewControllerToPresent.popoverPresentationController?.sourceView = webView
-        viewControllerToPresent.popoverPresentationController?.sourceRect = CGRect(x: webView.center.x, y: webView.center.y, width: 1, height: 1)
-      }
+        if #available(iOS 13, *), viewControllerToPresent is UIDocumentPickerViewController && UIDevice.current.userInterfaceIdiom == .phone {
+            // Prevent the app from crashing if the WKWebView decides to present a UIDocumentMenuViewController while it self is presented modally.
+            viewControllerToPresent.popoverPresentationController?.sourceView = webView
+            viewControllerToPresent.popoverPresentationController?.sourceRect = CGRect(x: webView.center.x, y: webView.center.y, width: 1, height: 1)
+        }
     }
 }
 
@@ -52,9 +49,9 @@ class ViewController: UIViewController {
 extension ViewController: WKScriptMessageHandler {
     func userContentController(_ userController: WKUserContentController, didReceive message: WKScriptMessage) {
         if message.name == "__NVW_WEBVIEW_HANDLER__", let messageBody = message.body as? String {
-                // do something here with message
-                // print is only an example
-                print(messageBody)
+            // do something here with message
+            // print is only an example
+            print(messageBody)
         }
     }
 }
@@ -70,23 +67,22 @@ extension ViewController: WKNavigationDelegate {
         let injectFunction = """
             (function() { window['__NVW_WEBVIEW__'] = true})()
             """
-               
+        
         // executes javascript
         self.webView?.evaluateJavaScript(injectFunction) { _, error in
             if let error = error {
                 print("ERROR while evaluating javascript \(error)")
-                }
-            print("executed injected javascript")
             }
+            print("executed injected javascript")
         }
-    
-        // view has finished loading
-        func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-            // loading indicator
-            activityIndicator.stopAnimating()
-            activityIndicator.hidesWhenStopped = true
     }
     
+    // view has finished loading
+    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+        // loading indicator
+        activityIndicator.stopAnimating()
+        activityIndicator.hidesWhenStopped = true
+    }
     
     // workaround in case server has no certificate
     // which means page won't open because it's not safe
