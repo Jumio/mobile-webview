@@ -16,32 +16,31 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         webView.navigationDelegate = self
+               
+        webView.configuration.userContentController.add(self, name: "__NVW_WEBVIEW_HANDLER__")
         
         // simple url without JS
         guard let url = URL(string: self.urlString) else {
             return
         }
         
-        webView.configuration.userContentController.add(self, name: "__NVW_WEBVIEW_HANDLER__")
-        
         // create request
         let request = URLRequest(url: url)
-        
+                
         // load request
         webView.load(request)
     }
     
+     // just a hack? set UIVC presentation style to fullScreen instead?
     override func present(_ viewControllerToPresent: UIViewController, animated flag: Bool, completion: (() -> Void)? = nil) {
         setUIDocumentMenuViewControllerSoureViewsIfNeeded(viewControllerToPresent)
         super.present(viewControllerToPresent, animated: flag, completion: completion)
     }
-
+    
     func setUIDocumentMenuViewControllerSoureViewsIfNeeded(_ viewControllerToPresent: UIViewController) {
-        if #available(iOS 13, *), viewControllerToPresent is UIDocumentPickerViewController && UIDevice.current.userInterfaceIdiom == .phone {
-            // Prevent the app from crashing if the WKWebView decides to present a UIDocumentMenuViewController while it self is presented modally.
-            viewControllerToPresent.popoverPresentationController?.sourceView = webView
-            viewControllerToPresent.popoverPresentationController?.sourceRect = CGRect(x: webView.center.x, y: webView.center.y, width: 1, height: 1)
-        }
+        // Prevent the app from crashing if the WKWebView decides to present a UIDocumentMenuViewController while app itself is presented modally.
+        viewControllerToPresent.popoverPresentationController?.sourceView = webView
+        viewControllerToPresent.popoverPresentationController?.sourceRect = CGRect(x: webView.center.x, y: webView.center.y, width: 1, height: 1)
     }
 }
 
@@ -77,6 +76,8 @@ extension ViewController: WKNavigationDelegate {
         }
     }
     
+    func webView(_ webView: WKWebView, navigation: WKNavigation!) {}
+        
     // view has finished loading
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         // loading indicator
