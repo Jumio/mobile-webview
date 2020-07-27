@@ -31,7 +31,6 @@ class ViewController: UIViewController {
         webView.load(request)
     }
     
-     // just a hack? set UIVC presentation style to fullScreen instead?
     override func present(_ viewControllerToPresent: UIViewController, animated flag: Bool, completion: (() -> Void)? = nil) {
         setUIDocumentMenuViewControllerSoureViewsIfNeeded(viewControllerToPresent)
         super.present(viewControllerToPresent, animated: flag, completion: completion)
