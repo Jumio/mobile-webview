@@ -1,16 +1,16 @@
 # Jumio Native Mobile Webviews
-This repository contains sample implementations for Jumio Netverify Web 4 within native webviews on Android and iOS
+This repository contains sample implementations for Jumio Netverify Web 4 within native webviews on Android and iOS.
 
 ### iOS: WebView vs. SafariViewController
 
 #### WKWebView
-Embeds web contet into the actual app, basically a view that loads and displays web content. WKWebKit allows to parse and render html, load and display images, and execute JavaScript. The is the better choice if web content needs to be customized, like doing JavaScript evaluation on the page.
+Embeds web content into the actual app. This is basically a view that loads and displays web content. WKWebKit allows you to parse and render HTML, load and display images, and execute JavaScript. The is the better choice if web content needs to be customized, such as doing JavaScript evaluation on the page.
 
 #### SFSafariViewController
-Provides a visible standard interface for browsing the web, which means responsibility of rendering web content is delegated to Safari and web content is displayed in the actual browser. SafariViewController runs in a separate process from the host app, which can't “see” the URL or navigation happening inside it for safety reasons.
+Provides a visible standard interface for browsing the web, which means the responsibility for rendering web content is delegated to Safari, and web content is displayed in the actual browser. SafariViewController runs in a separate process from the host app, which can't “see” the URL or navigation happening inside it for safety reasons.
 
-## Contact
-If you have any questions regarding our implementation guide please contact Jumio Customer Service at support@jumio.com or https://support.jumio.com. The Jumio online helpdesk contains a wealth of information regarding our service including demo videos, product descriptions, FAQs and other things that may help to get you started with Jumio. Check it out at: https://support.jumio.com.
+## Contact Us
+If you have any questions regarding our implementation guide, contact us at support@jumio.com or https://support.jumio.com. The Jumio online helpdesk contains a wealth of information regarding our service including demo videos, product descriptions, FAQs, and other resources to help you get started with Jumio. 
 
 ## Copyright
 &copy; Jumio Corporation, 395 Page Mill Road, Suite 150, Palo Alto, CA 94306
