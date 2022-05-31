@@ -11,8 +11,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.jumio.nvw4.MainActivity
-import com.jumio.nvw4.R
-import kotlinx.android.synthetic.main.fragment_settings.*
+import com.jumio.nvw4.databinding.FragmentSettingsBinding
 import java.util.ArrayList
 
 class SettingsFragment : Fragment() {
@@ -23,23 +22,33 @@ class SettingsFragment : Fragment() {
         fun newInstance(): SettingsFragment {
             return SettingsFragment()
         }
+
+        private var _binding: FragmentSettingsBinding? = null
+        private val binding get() = _binding!!
+
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_settings, container, false)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        _binding = FragmentSettingsBinding.inflate(inflater, container, false)
+        return binding.root
+
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        button_start.setOnClickListener {
+        binding.buttonStart.setOnClickListener {
 
-            var permissions = arrayOf(Manifest.permission.CAMERA, Manifest.permission.READ_EXTERNAL_STORAGE)
+            val permissions = arrayOf(Manifest.permission.CAMERA, Manifest.permission.READ_EXTERNAL_STORAGE)
             val missingPermissions = checkMissingPermissions(permissions)
             if (missingPermissions != null && missingPermissions.isNotEmpty()) {
                 startPermissionRequest(missingPermissions)
             } else {
-                (activity as MainActivity).showWebview(textinputedittext_url.text.toString())
+                (activity as MainActivity).showWebview(binding.textinputedittextUrl.text.toString())
             }
         }
     }
@@ -63,12 +72,13 @@ class SettingsFragment : Fragment() {
         ) }
     }
 
+
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         when (requestCode) {
             PERMISSION_REQUEST_CODE -> if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(activity!!, "Permission Granted", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireActivity(), "Permission Granted", Toast.LENGTH_SHORT).show()
             } else {
-                Toast.makeText(activity!!, "Permission Denied", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireActivity(), "Permission Denied", Toast.LENGTH_SHORT).show()
             }
         }
     }
