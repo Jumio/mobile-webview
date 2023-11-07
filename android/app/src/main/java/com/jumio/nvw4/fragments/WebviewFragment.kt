@@ -32,13 +32,12 @@ class WebviewFragment : Fragment() {
     companion object {
         var TAG: String = "NVW4"
         var PERMISSION_REQUEST_CODE: Int = 1000
-        private var mUploadMessage: ValueCallback<Uri?>? = null
-        var uploadMessage: ValueCallback<Array<Uri>>? = null
         const val REQUEST_SELECT_FILE = 1002
-        private const val FILECHOOSER_RESULTCODE = 1003
+
+        var uploadMessage: ValueCallback<Array<Uri>>? = null
 
         private var _binding: FragmentWebviewBinding? = null
-        private val binding get() = _binding!!
+        private val binding get() = _binding
 
 
         //Inject javascript code here that is executed after the page is loaded
@@ -50,7 +49,6 @@ class WebviewFragment : Fragment() {
         }
         """.trimIndent()
 
-        private var mFilePathCallback: ValueCallback<Array<Uri>>? = null
 
         fun newInstance(url: String): WebviewFragment {
             val fragment = WebviewFragment()
@@ -67,9 +65,9 @@ class WebviewFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View {
+    ): View? {
         _binding = FragmentWebviewBinding.inflate(inflater, container, false)
-        return binding.root
+        return binding?.root
     }
 
     @SuppressLint("SetJavaScriptEnabled")
@@ -78,18 +76,21 @@ class WebviewFragment : Fragment() {
 
         WebView.setWebContentsDebuggingEnabled(true)
 
-        binding.webview.settings.javaScriptEnabled = true
-        binding.webview.settings.allowFileAccessFromFileURLs = true
-        binding.webview.settings.allowFileAccess = true
-        binding.webview.settings.allowContentAccess = true
-        binding.webview.settings.allowUniversalAccessFromFileURLs = true
-        binding.webview.settings.javaScriptCanOpenWindowsAutomatically = true
-        binding.webview.settings.mediaPlaybackRequiresUserGesture = false
-        binding.webview.settings.domStorageEnabled = true
+        binding?.webview?.apply {
+            settings.apply {
+                // allowFileAccess = true               // true by default
+                // allowContentAccess = true            // true by default
+                // allowFileAccessFromFileURLs = true   // unnecessary if allowUniversalAccessFromFileURLs() value is also true
+                domStorageEnabled = true
+                javaScriptEnabled = true
+                allowUniversalAccessFromFileURLs = true
+                javaScriptCanOpenWindowsAutomatically = true
+                mediaPlaybackRequiresUserGesture = false
+            }
+            addJavascriptInterface(PostMessageHandler(), "__NVW_WEBVIEW_HANDLER__")
+        }
 
-        binding.webview.addJavascriptInterface(PostMessageHandler(), "__NVW_WEBVIEW_HANDLER__")
-
-        binding.webview.webChromeClient = object : WebChromeClientFullScreen() {
+        binding?.webview?.webChromeClient = object : WebChromeClientFullScreen() {
 
             // Grant permissions for cam
             @TargetApi(Build.VERSION_CODES.M)
@@ -110,12 +111,23 @@ class WebviewFragment : Fragment() {
                             )
                             request.grant(request.resources)
                         } else {
+                            val permissions =
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                                    arrayOf(
+                                        Manifest.permission.CAMERA,
+                                        Manifest.permission.READ_MEDIA_AUDIO,
+                                        Manifest.permission.READ_MEDIA_IMAGES,
+                                        Manifest.permission.READ_MEDIA_VIDEO
+                                    )
+                                } else {
+                                    arrayOf(
+                                        Manifest.permission.CAMERA,
+                                        Manifest.permission.READ_EXTERNAL_STORAGE
+                                    )
+                                }
                             ActivityCompat.requestPermissions(
                                 activity!!,
-                                arrayOf(
-                                    Manifest.permission.CAMERA,
-                                    Manifest.permission.READ_EXTERNAL_STORAGE
-                                ),
+                                permissions,
                                 PERMISSION_REQUEST_CODE
                             )
                         }
@@ -124,20 +136,20 @@ class WebviewFragment : Fragment() {
             }
 
             // For Lollipop 5.0+ Devices
-            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
             override fun onShowFileChooser(
                 mWebView: WebView?,
                 filePathCallback: ValueCallback<Array<Uri>>?,
                 fileChooserParams: FileChooserParams
             ): Boolean {
                 if (uploadMessage != null) {
-                    uploadMessage!!.onReceiveValue(null)
+                    uploadMessage?.onReceiveValue(null)
                     uploadMessage = null
                 }
                 try {
                     uploadMessage = filePathCallback
                     val intent = fileChooserParams.createIntent()
                     intent.type = "image/*"
+                    intent.putExtra(Intent.EXTRA_MIME_TYPES, fileChooserParams.acceptTypes)
                     try {
                         startActivityForResult(intent, REQUEST_SELECT_FILE)
                     } catch (e: ActivityNotFoundException) {
@@ -161,20 +173,10 @@ class WebviewFragment : Fragment() {
                 }
             }
 
-            private fun openFileChooser(uploadMsg: ValueCallback<Uri?>) {
-                mUploadMessage = uploadMsg
-                val i = Intent(Intent.ACTION_GET_CONTENT)
-                i.addCategory(Intent.CATEGORY_OPENABLE)
-                i.type = "image/*"
-                startActivityForResult(
-                    Intent.createChooser(i, "File Chooser"),
-                    FILECHOOSER_RESULTCODE
-                )
-            }
-
             override fun onConsoleMessage(consoleMessage: ConsoleMessage): Boolean {
-                Log.d(TAG, consoleMessage.message())
-                return true
+                Log.d(
+                    TAG, "console message: ${consoleMessage.message()}")
+                    return true
             }
 
             override fun getDefaultVideoPoster(): Bitmap {
@@ -182,7 +184,20 @@ class WebviewFragment : Fragment() {
             }
         }
 
-        binding.webview.webViewClient = object : WebViewClient() {
+        binding?.webview?.webViewClient = object : WebViewClient() {
+
+            @RequiresApi(Build.VERSION_CODES.M)
+            override fun onReceivedError(
+                view: WebView?,
+                request: WebResourceRequest?,
+                error: WebResourceError?
+            ) {
+                Toast.makeText(
+                    activity?.applicationContext,
+                    "${error?.errorCode}: ${error?.description}",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
 
             override fun onReceivedError(
                 view: WebView?,
@@ -190,9 +205,10 @@ class WebviewFragment : Fragment() {
                 description: String?,
                 failingUrl: String?
             ) {
-                Toast.makeText(activity, description, Toast.LENGTH_SHORT).show()
+                Toast.makeText(activity?.applicationContext, description, Toast.LENGTH_SHORT).show()
             }
 
+            @SuppressLint("WebViewClientOnReceivedSslError")
             override fun onReceivedSslError(
                 view: WebView?,
                 handler: SslErrorHandler?,
@@ -203,33 +219,25 @@ class WebviewFragment : Fragment() {
 
             override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
                 // Put your javascript function that you want to execute here
-                binding.webview.loadUrl("javascript:($injectFunction)()")
+                binding?.webview?.loadUrl("javascript:($injectFunction)()")
             }
         }
 
-        binding.webview.loadUrl(arguments?.get("url") as String)
+        binding?.webview?.loadUrl(arguments?.getString("url") as String)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent?) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            if (requestCode == REQUEST_SELECT_FILE) {
-                if (uploadMessage == null)
-                    return
-                uploadMessage!!.onReceiveValue(
-                    WebChromeClient.FileChooserParams.parseResult(
-                        resultCode,
-                        intent
-                    )
-                )
-                uploadMessage = null
-            }
-        } else if (requestCode == FILECHOOSER_RESULTCODE) {
-            if (null == mUploadMessage)
+        if (requestCode == REQUEST_SELECT_FILE) {
+            if (uploadMessage == null || resultCode != AppCompatActivity.RESULT_OK)
                 return
-            val result =
-                if (intent == null || resultCode != AppCompatActivity.RESULT_OK) null else intent.data
-            mUploadMessage!!.onReceiveValue(result)
-            mUploadMessage = null
+
+            uploadMessage?.onReceiveValue(
+                WebChromeClient.FileChooserParams.parseResult(
+                    resultCode,
+                    intent
+                )
+            )
+            uploadMessage = null
         } else {
             Toast.makeText(
                 activity?.applicationContext,
@@ -245,10 +253,10 @@ class WebviewFragment : Fragment() {
         fun postMessage(json: String?, transferList: String?): Boolean {
             /*
                 There we're handling messages from NVW4 client, its the same as for iFrame logging;
-                More details you can find there:
+                More details can be found here:
                 https://github.com/Jumio/implementation-guides/blob/master/netverify/netverify-web-v4.md#optional-iframe-logging
             */
-            Log.d(TAG, "postMessage triggered, json: " + json.toString())
+            Log.d(TAG, "postMessage triggered, json: ${json.toString()}")
             return true
         }
     }

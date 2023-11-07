@@ -2,29 +2,30 @@ package com.jumio.nvw4.fragments
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.jumio.nvw4.MainActivity
 import com.jumio.nvw4.databinding.FragmentSettingsBinding
-import java.util.ArrayList
 
 class SettingsFragment : Fragment() {
 
     companion object {
-        var PERMISSION_REQUEST_CODE : Int = 1001
+        var PERMISSION_REQUEST_CODE: Int = 1001
 
         fun newInstance(): SettingsFragment {
             return SettingsFragment()
         }
 
         private var _binding: FragmentSettingsBinding? = null
-        private val binding get() = _binding!!
+        private val binding get() = _binding
 
     }
 
@@ -34,21 +35,38 @@ class SettingsFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         _binding = FragmentSettingsBinding.inflate(inflater, container, false)
-        return binding.root
+        return binding?.root
 
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.buttonStart.setOnClickListener {
+        binding?.buttonStart?.setOnClickListener {
 
-            val permissions = arrayOf(Manifest.permission.CAMERA, Manifest.permission.READ_EXTERNAL_STORAGE)
+            val permissions = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                arrayOf(
+                    Manifest.permission.CAMERA,
+                    Manifest.permission.READ_MEDIA_AUDIO,
+                    Manifest.permission.READ_MEDIA_IMAGES,
+                    Manifest.permission.READ_MEDIA_VIDEO
+                )
+            } else {
+                arrayOf(
+                    Manifest.permission.CAMERA,
+                    Manifest.permission.READ_EXTERNAL_STORAGE,
+                )
+            }
             val missingPermissions = checkMissingPermissions(permissions)
-            if (missingPermissions != null && missingPermissions.isNotEmpty()) {
+            if (!missingPermissions.isNullOrEmpty()) {
                 startPermissionRequest(missingPermissions)
             } else {
-                (activity as MainActivity).showWebview(binding.textinputedittextUrl.text.toString())
+                activity?.window?.setFlags(
+                    WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
+                    WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED
+                )
+
+                (activity as MainActivity).showWebview(binding?.textinputedittextUrl?.text.toString())
             }
         }
     }
@@ -58,7 +76,12 @@ class SettingsFragment : Fragment() {
         val mp = ArrayList<String>()
 
         for (p in permissions) {
-            if (activity?.let { ContextCompat.checkSelfPermission(it, p) } != PackageManager.PERMISSION_GRANTED) {
+            if (activity?.let {
+                    ContextCompat.checkSelfPermission(
+                        it,
+                        p
+                    )
+                } != PackageManager.PERMISSION_GRANTED) {
                 mp.add(p)
             }
         }
@@ -67,13 +90,20 @@ class SettingsFragment : Fragment() {
     }
 
     private fun startPermissionRequest(missingPermissions: Array<String>) {
-        activity?.let { ActivityCompat.requestPermissions(it, missingPermissions,
-            PERMISSION_REQUEST_CODE
-        ) }
+        activity?.let {
+            ActivityCompat.requestPermissions(
+                it, missingPermissions,
+                PERMISSION_REQUEST_CODE
+            )
+        }
     }
 
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
         when (requestCode) {
             PERMISSION_REQUEST_CODE -> if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 Toast.makeText(requireActivity(), "Permission Granted", Toast.LENGTH_SHORT).show()
