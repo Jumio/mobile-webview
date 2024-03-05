@@ -16,7 +16,7 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         webView.navigationDelegate = self
-               
+        webView.uiDelegate = self
         webView.configuration.userContentController.add(self, name: "__NVW_WEBVIEW_HANDLER__")
         
         // simple url without JS
