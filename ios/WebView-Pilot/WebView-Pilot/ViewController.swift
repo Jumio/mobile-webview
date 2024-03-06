@@ -97,3 +97,6 @@ extension ViewController: WKNavigationDelegate {
         completionHandler(.useCredential, URLCredential(trust: serverTrust))
     }
 }
+
+// handles WebView
+extension ViewController: WKUIDelegate {}
