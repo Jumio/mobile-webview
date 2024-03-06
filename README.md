@@ -9,9 +9,8 @@ Embeds web content into the actual app. This is basically a view that loads and 
 #### SFSafariViewController
 Provides a visible standard interface for browsing the web, which means the responsibility for rendering web content is delegated to Safari, and web content is displayed in the actual browser. SafariViewController runs in a separate process from the host app, which can't “see” the URL or navigation happening inside it for safety reasons.
 
-
 ## Contact
-If you have any questions regarding our implementation guide please contact Jumio Customer Service at support@jumio.com. The Jumio online helpdesk contains a wealth of information regarding our service including demo videos, product descriptions, FAQs and other things that may help to get you started with Jumio. [Check it out at here](https://support.jumio.com).
+If you have any questions please contact Jumio Customer Service at support@jumio.com. The Jumio online helpdesk contains a wealth of information regarding our service including demo videos, product descriptions, FAQs and other things that may help to get you started with Jumio. [Check it out at here](https://support.jumio.com).
 
 ## Copyright
 &copy; Jumio Corporation, 100 Mathilda Place Suite 100 Sunnyvale, CA 94086
