@@ -7,7 +7,6 @@ import com.jumio.nvw4.fragments.SettingsFragment
 import com.jumio.nvw4.fragments.WebviewFragment
 
 class MainActivity : AppCompatActivity() {
-
     private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -21,18 +20,17 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
 
         if (savedInstanceState == null) {
-            supportFragmentManager.
-                beginTransaction().
-                add(R.id.fragment_container, SettingsFragment.newInstance()).
-                commit()
+            supportFragmentManager
+                .beginTransaction()
+                .add(R.id.fragment_container, SettingsFragment.newInstance())
+                .commit()
         }
     }
 
-    fun showWebview(url:String) {
-        supportFragmentManager.
-            beginTransaction().
-            replace(R.id.fragment_container, WebviewFragment.newInstance(url)).
-            addToBackStack("webview").
-            commitAllowingStateLoss()
+    fun showWebview(url: String) {
+        supportFragmentManager
+            .beginTransaction()
+            .replace(R.id.fragment_container, WebviewFragment.newInstance(url))
+            .addToBackStack("webview").commitAllowingStateLoss()
     }
 }
