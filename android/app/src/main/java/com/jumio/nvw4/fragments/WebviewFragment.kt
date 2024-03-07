@@ -4,6 +4,7 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.annotation.TargetApi
 import android.content.ActivityNotFoundException
+import android.content.Context
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
@@ -26,9 +27,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.jumio.nvw4.databinding.FragmentWebviewBinding
 
-
 class WebviewFragment : Fragment() {
-
     companion object {
         var TAG: String = "NVW4"
         var PERMISSION_REQUEST_CODE: Int = 1000
@@ -38,17 +37,6 @@ class WebviewFragment : Fragment() {
 
         private var _binding: FragmentWebviewBinding? = null
         private val binding get() = _binding
-
-
-        //Inject javascript code here that is executed after the page is loaded
-        val injectFunction = """
-        function () {
-            window['__NVW_WEBVIEW__'] = {
-            isAndroid: true
-            }
-        }
-        """.trimIndent()
-
 
         fun newInstance(url: String): WebviewFragment {
             val fragment = WebviewFragment()
@@ -64,25 +52,28 @@ class WebviewFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? {
         _binding = FragmentWebviewBinding.inflate(inflater, container, false)
         return binding?.root
     }
 
     @SuppressLint("SetJavaScriptEnabled")
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
 
         WebView.setWebContentsDebuggingEnabled(true)
 
         binding?.webview?.apply {
             settings.apply {
-                // allowFileAccess = true               // true by default
-                // allowContentAccess = true            // true by default
-                // allowFileAccessFromFileURLs = true   // unnecessary if allowUniversalAccessFromFileURLs() value is also true
+                allowFileAccess = true
+                allowContentAccess = true
                 domStorageEnabled = true
                 javaScriptEnabled = true
+                @Suppress("DEPRECATION")
                 allowUniversalAccessFromFileURLs = true
                 javaScriptCanOpenWindowsAutomatically = true
                 mediaPlaybackRequiresUserGesture = false
@@ -90,173 +81,180 @@ class WebviewFragment : Fragment() {
             addJavascriptInterface(PostMessageHandler(), "__NVW_WEBVIEW_HANDLER__")
         }
 
-        binding?.webview?.webChromeClient = object : WebChromeClientFullScreen() {
-
-            // Grant permissions for cam
-            @TargetApi(Build.VERSION_CODES.M)
-            override fun onPermissionRequest(request: PermissionRequest) {
-                activity?.runOnUiThread {
-                    if ("android.webkit.resource.VIDEO_CAPTURE" == request.resources[0]) {
-                        if (ContextCompat.checkSelfPermission(
-                                activity!!,
-                                Manifest.permission.CAMERA
-                            ) == PackageManager.PERMISSION_GRANTED
-                        ) {
-                            Log.d(
-                                TAG,
-                                String.format(
-                                    "PERMISSION REQUEST %s GRANTED",
-                                    request.origin.toString()
+        binding?.webview?.webChromeClient =
+            object : WebChromeClientFullScreen() {
+                // Grant permissions for camera
+                @TargetApi(Build.VERSION_CODES.M)
+                override fun onPermissionRequest(request: PermissionRequest) {
+                    activity?.runOnUiThread {
+                        if ("android.webkit.resource.VIDEO_CAPTURE" == request.resources[0]) {
+                            if (ContextCompat.checkSelfPermission(
+                                    requireActivity(),
+                                    Manifest.permission.CAMERA,
+                                ) == PackageManager.PERMISSION_GRANTED
+                            ) {
+                                Log.d(
+                                    TAG,
+                                    String.format(
+                                        "PERMISSION REQUEST %s GRANTED",
+                                        request.origin.toString(),
+                                    ),
                                 )
-                            )
-                            request.grant(request.resources)
-                        } else {
-                            val permissions =
-                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                                    arrayOf(
-                                        Manifest.permission.CAMERA,
-                                        Manifest.permission.READ_MEDIA_AUDIO,
-                                        Manifest.permission.READ_MEDIA_IMAGES,
-                                        Manifest.permission.READ_MEDIA_VIDEO
-                                    )
-                                } else {
-                                    arrayOf(
-                                        Manifest.permission.CAMERA,
-                                        Manifest.permission.READ_EXTERNAL_STORAGE
-                                    )
-                                }
-                            ActivityCompat.requestPermissions(
-                                activity!!,
-                                permissions,
-                                PERMISSION_REQUEST_CODE
-                            )
+                                request.grant(request.resources)
+                            } else {
+                                val permissions =
+                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                                        arrayOf(
+                                            Manifest.permission.CAMERA,
+                                            Manifest.permission.READ_MEDIA_AUDIO,
+                                            Manifest.permission.READ_MEDIA_IMAGES,
+                                            Manifest.permission.READ_MEDIA_VIDEO,
+                                            Manifest.permission.MODIFY_AUDIO_SETTINGS,
+                                            Manifest.permission.RECORD_AUDIO,
+                                        )
+                                    } else {
+                                        arrayOf(
+                                            Manifest.permission.CAMERA,
+                                            Manifest.permission.READ_EXTERNAL_STORAGE,
+                                        )
+                                    }
+                                ActivityCompat.requestPermissions(
+                                    requireActivity(),
+                                    permissions,
+                                    PERMISSION_REQUEST_CODE,
+                                )
+                            }
                         }
                     }
                 }
-            }
 
-            // For Lollipop 5.0+ Devices
-            override fun onShowFileChooser(
-                mWebView: WebView?,
-                filePathCallback: ValueCallback<Array<Uri>>?,
-                fileChooserParams: FileChooserParams
-            ): Boolean {
-                if (uploadMessage != null) {
+                // For Lollipop 5.0+ Devices
+                override fun onShowFileChooser(
+                    mWebView: WebView?,
+                    filePathCallback: ValueCallback<Array<Uri>>?,
+                    fileChooserParams: FileChooserParams,
+                ): Boolean {
                     uploadMessage?.onReceiveValue(null)
-                    uploadMessage = null
-                }
-                try {
                     uploadMessage = filePathCallback
-                    val intent = fileChooserParams.createIntent()
-                    intent.type = "image/*"
-                    intent.putExtra(Intent.EXTRA_MIME_TYPES, fileChooserParams.acceptTypes)
-                    try {
+
+                    val intent =
+                        fileChooserParams.createIntent().apply {
+                            type = "image/*"
+                            putExtra(Intent.EXTRA_MIME_TYPES, fileChooserParams.acceptTypes)
+                        }
+                    return try {
                         startActivityForResult(intent, REQUEST_SELECT_FILE)
+                        true
                     } catch (e: ActivityNotFoundException) {
                         uploadMessage = null
-                        Toast.makeText(
-                            activity?.applicationContext,
-                            "Cannot Open File Chooser",
-                            Toast.LENGTH_LONG
-                        ).show()
-                        return false
+                        ToastUtils.showToast(requireContext(), "Cannot Open File Chooser")
+                        false
                     }
+                }
+
+                override fun onConsoleMessage(consoleMessage: ConsoleMessage): Boolean {
+                    Log.d(
+                        TAG, "console message: ${consoleMessage.message()}",
+                    )
                     return true
-                } catch (e: ActivityNotFoundException) {
-                    uploadMessage = null
-                    Toast.makeText(
-                        activity?.applicationContext,
-                        "Cannot Open File Chooser",
-                        Toast.LENGTH_LONG
-                    ).show()
-                    return false
+                }
+
+                override fun getDefaultVideoPoster(): Bitmap {
+                    return Bitmap.createBitmap(10, 10, Bitmap.Config.ARGB_8888)
                 }
             }
 
-            override fun onConsoleMessage(consoleMessage: ConsoleMessage): Boolean {
-                Log.d(
-                    TAG, "console message: ${consoleMessage.message()}")
-                    return true
-            }
+        binding?.webview?.webViewClient =
+            object : WebViewClient() {
+                @RequiresApi(Build.VERSION_CODES.M)
+                override fun onReceivedError(
+                    view: WebView?,
+                    request: WebResourceRequest?,
+                    error: WebResourceError?,
+                ) {
+                    ToastUtils.showToast(
+                        requireContext(),
+                        "${error?.errorCode}: ${error?.description}",
+                    )
+                }
 
-            override fun getDefaultVideoPoster(): Bitmap {
-                return Bitmap.createBitmap(10, 10, Bitmap.Config.ARGB_8888)
-            }
-        }
+                override fun onReceivedError(
+                    view: WebView?,
+                    errorCode: Int,
+                    description: String?,
+                    failingUrl: String?,
+                ) {
+                    if (description != null) {
+                        ToastUtils.showToast(requireContext(), description)
+                    }
+                }
 
-        binding?.webview?.webViewClient = object : WebViewClient() {
+                @SuppressLint("WebViewClientOnReceivedSslError")
+                override fun onReceivedSslError(
+                    view: WebView?,
+                    handler: SslErrorHandler?,
+                    error: SslError?,
+                ) {
+                    handler?.proceed()
+                }
 
-            @RequiresApi(Build.VERSION_CODES.M)
-            override fun onReceivedError(
-                view: WebView?,
-                request: WebResourceRequest?,
-                error: WebResourceError?
-            ) {
-                Toast.makeText(
-                    activity?.applicationContext,
-                    "${error?.errorCode}: ${error?.description}",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
+                override fun onPageStarted(
+                    view: WebView?,
+                    url: String?,
+                    favicon: Bitmap?,
+                ) {
+                    // Inject any javascript function you want to execute here
 
-            override fun onReceivedError(
-                view: WebView?,
-                errorCode: Int,
-                description: String?,
-                failingUrl: String?
-            ) {
-                Toast.makeText(activity?.applicationContext, description, Toast.LENGTH_SHORT).show()
+//                    val injectFunction = """
+//                        function () {
+//                            window['__NVW_WEBVIEW__'] = {
+//                                isAndroid: true
+//                            }
+//                        }
+//                        """.trimIndent()
+//                    binding?.webview?.loadUrl("javascript:($injectFunction)()")
+                }
             }
-
-            @SuppressLint("WebViewClientOnReceivedSslError")
-            override fun onReceivedSslError(
-                view: WebView?,
-                handler: SslErrorHandler?,
-                error: SslError?
-            ) {
-                handler?.proceed()
-            }
-
-            override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
-                // Put your javascript function that you want to execute here
-                binding?.webview?.loadUrl("javascript:($injectFunction)()")
-            }
-        }
 
         binding?.webview?.loadUrl(arguments?.getString("url") as String)
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent?) {
+    override fun onActivityResult(
+        requestCode: Int,
+        resultCode: Int,
+        intent: Intent?,
+    ) {
         if (requestCode == REQUEST_SELECT_FILE) {
-            if (uploadMessage == null || resultCode != AppCompatActivity.RESULT_OK)
+            if (uploadMessage == null || resultCode != AppCompatActivity.RESULT_OK) {
                 return
+            }
 
             uploadMessage?.onReceiveValue(
                 WebChromeClient.FileChooserParams.parseResult(
                     resultCode,
-                    intent
-                )
+                    intent,
+                ),
             )
             uploadMessage = null
         } else {
             Toast.makeText(
                 activity?.applicationContext,
                 "Failed to Upload Image",
-                Toast.LENGTH_LONG
+                Toast.LENGTH_LONG,
             ).show()
         }
         super.onActivityResult(requestCode, resultCode, intent)
     }
 
-    class PostMessageHandler {
+    class PostMessageHandler() {
         @JavascriptInterface
-        fun postMessage(json: String?, transferList: String?): Boolean {
+        fun receiveMessage(json: String?): Boolean {
             /*
-                There we're handling messages from NVW4 client, its the same as for iFrame logging;
+                Here we are listening to any messages from NVW4 client, its the same as for iFrame logging;
                 More details can be found here:
                 https://github.com/Jumio/implementation-guides/blob/master/netverify/netverify-web-v4.md#optional-iframe-logging
-            */
-            Log.d(TAG, "postMessage triggered, json: ${json.toString()}")
+             */
+            Log.d(TAG, "postMessage triggered, json: $json")
             return true
         }
     }
@@ -271,32 +269,41 @@ class WebviewFragment : Fragment() {
          * Callback will tell the host application that the current page would
          * like to show a custom View in a particular orientation
          */
-        override fun onShowCustomView(view: View, callback: CustomViewCallback) {
-            //If we have custom view, that means that we are already in full screen, and need to go to original state
+        override fun onShowCustomView(
+            view: View,
+            callback: CustomViewCallback,
+        ) {
+            // If we have custom view, that means that we are already in full screen, and need to go to original state
             if (customView != null) {
                 onHideCustomView()
                 return
             }
-            //going full screen
+
+            // Got to full screen
             customView = view
-            //We need to store there parameters, so we can restore app state, after we exit full screen mode
+
+            // We need to store certain parameters, so we can restore app state after we exit full screen mode
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                originalVisibility = activity?.window?.decorView?.visibility!!
+                originalVisibility = activity?.window?.decorView?.visibility ?: View.INVISIBLE
                 (activity?.window?.decorView as FrameLayout).addView(
                     customView,
-                    FrameLayout.LayoutParams(-1, -1)
+                    FrameLayout.LayoutParams(-1, -1),
                 )
                 activity?.window?.setDecorFitsSystemWindows(false)
             } else {
-                originalVisibility = activity?.window?.decorView?.windowSystemUiVisibility!!
+                @Suppress("DEPRECATION")
+                originalVisibility =
+                    activity?.window?.decorView?.windowSystemUiVisibility ?: View.INVISIBLE
                 (activity?.window?.decorView as FrameLayout).addView(
                     customView,
-                    FrameLayout.LayoutParams(-1, -1)
+                    FrameLayout.LayoutParams(-1, -1),
                 )
+                @Suppress("DEPRECATION")
                 activity?.window?.decorView?.systemUiVisibility =
                     3846 or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
             }
-            originalOrientation = activity?.requestedOrientation!!
+            originalOrientation =
+                activity?.requestedOrientation ?: ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
         }
 
         /**
@@ -305,18 +312,29 @@ class WebviewFragment : Fragment() {
          */
         override fun onHideCustomView() {
             (activity?.window?.decorView as FrameLayout).removeView(
-                customView
+                customView,
             )
             customView = null
-            //Restoring aps state, as it was before we go to full screen
+            // Restoring aps state, as it was before we go to full screen
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                 activity?.window?.setDecorFitsSystemWindows(true)
             } else {
+                @Suppress("DEPRECATION")
                 activity?.window?.decorView?.systemUiVisibility = originalVisibility
             }
             activity?.requestedOrientation = originalOrientation
-            if (customViewCallback != null) customViewCallback!!.onCustomViewHidden()
+            if (customViewCallback != null) customViewCallback?.onCustomViewHidden()
             customViewCallback = null
+        }
+    }
+
+    object ToastUtils {
+        fun showToast(
+            context: Context,
+            message: String,
+            duration: Int = Toast.LENGTH_SHORT,
+        ) {
+            Toast.makeText(context, message, duration).show()
         }
     }
 }

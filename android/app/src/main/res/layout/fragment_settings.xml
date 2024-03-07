@@ -12,6 +12,7 @@
         android:layout_alignParentEnd="true"
         android:layout_marginTop="16dp"
         android:text="Start"
+        app:backgroundTint="@color/jumio_primary"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textinputlayout_url"
@@ -26,10 +27,13 @@
         android:background="@android:color/white"
         android:backgroundTint="@android:color/white"
         app:layout_constraintTop_toBottomOf="@+id/button_start"
-        tools:layout_editor_absoluteX="16dp">
+        tools:layout_editor_absoluteX="16dp"
+        app:endIconMode="clear_text" >
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/textinputedittext_url"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@android:color/white"
