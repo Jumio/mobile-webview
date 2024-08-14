@@ -248,7 +248,7 @@ class WebviewFragment : Fragment() {
 
     class PostMessageHandler() {
         @JavascriptInterface
-        fun receiveMessage(json: String?): Boolean {
+        fun postMessage(json: String?, transferList: String?): Boolean {
             /*
                 Here we are listening to any messages from NVW4 client, its the same as for iFrame logging;
                 More details can be found here:
