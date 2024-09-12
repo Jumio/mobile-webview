@@ -213,10 +213,20 @@ class WebviewFragment : Fragment() {
 				return
 			}
 
-			uploadMessage?.onReceiveValue(WebChromeClient.FileChooserParams.parseResult(resultCode, intent))
+			val imageUris = WebChromeClient.FileChooserParams.parseResult(resultCode, intent)
+
+			if (imageUris.isNullOrEmpty()) {
+				activity?.applicationContext?.let {
+					showToast(it, "Failed to retrieve image", Toast.LENGTH_LONG)
+				}
+			}
+
+			uploadMessage?.onReceiveValue(imageUris)
 			uploadMessage = null
 		} else {
-			Toast.makeText(activity?.applicationContext, "Failed to Upload Image", Toast.LENGTH_LONG).show()
+			activity?.applicationContext?.let {
+				showToast(it, "Failed to retrieve image", Toast.LENGTH_LONG)
+			}
 		}
 
 		@Suppress("DEPRECATION")
@@ -306,9 +316,8 @@ class WebviewFragment : Fragment() {
 	}
 }
 
-private fun showToast(
-	context: Context,
-	message: String,
-	duration: Int = Toast.LENGTH_SHORT
-) = Toast.makeText(context, message, duration).show()
+private fun showToast(context: Context, message: String, duration: Int = Toast.LENGTH_SHORT) {
+	Log.d(WebviewFragment.TAG, message)
+	Toast.makeText(context, message, duration).show()
+}
 
