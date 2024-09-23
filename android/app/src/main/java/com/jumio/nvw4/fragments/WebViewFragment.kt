@@ -36,6 +36,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.jumio.nvw4.databinding.FragmentWebviewBinding
 
+private const val FILE_PICKER_RETRIEVE_IMAGE_ERROR = "Failed to retrieve images"
 
 class WebViewFragment : Fragment() {
 	private var _binding: FragmentWebviewBinding? = null
@@ -214,27 +215,37 @@ class WebViewFragment : Fragment() {
 				return
 			}
 
-			val imageUris = WebChromeClient.FileChooserParams.parseResult(resultCode, intent)
+			var imageUris = WebChromeClient.FileChooserParams.parseResult(resultCode, intent)
 
-			if (imageUris.isNullOrEmpty()) {
-				activity?.applicationContext?.let {
-					showToast(it, "Failed to retrieve image", Toast.LENGTH_LONG)
+			if (imageUris == null) {
+				val clipData = intent?.clipData ?: run {
+					showFilePickerRetrievalError()
+					return
+				}
+
+				val clipItems = clipData.itemCount
+				imageUris = arrayOfNulls<Uri>(clipItems)
+
+				for (i in 0 until clipItems) {
+					imageUris[i] = clipData.getItemAt(i).uri
 				}
 			}
 
 			uploadMessage?.onReceiveValue(imageUris)
 			uploadMessage = null
 		} else {
-			activity?.applicationContext?.let {
-				showToast(it, "Failed to retrieve image", Toast.LENGTH_LONG)
-			}
+			showFilePickerRetrievalError()
 		}
 
 		@Suppress("DEPRECATION")
 		super.onActivityResult(requestCode, resultCode, intent)
 	}
 
-	class PostMessageHandler {
+	private fun showFilePickerRetrievalError() = activity?.applicationContext?.let {
+		showToast(it, FILE_PICKER_RETRIEVE_IMAGE_ERROR, Toast.LENGTH_LONG)
+	}
+
+	inner class PostMessageHandler {
 		@JavascriptInterface
 		fun postMessage(json: String?, transferList: String?): Boolean {
 			/*
