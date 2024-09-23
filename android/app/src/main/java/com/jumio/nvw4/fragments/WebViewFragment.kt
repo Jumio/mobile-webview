@@ -36,7 +36,8 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.jumio.nvw4.databinding.FragmentWebviewBinding
 
-class WebviewFragment : Fragment() {
+
+class WebViewFragment : Fragment() {
 	private var _binding: FragmentWebviewBinding? = null
 	private val binding get() = _binding!!
 
@@ -47,7 +48,7 @@ class WebviewFragment : Fragment() {
 
 		var uploadMessage: ValueCallback<Array<Uri>>? = null
 
-		fun newInstance(url: String): WebviewFragment = WebviewFragment().apply {
+		fun newInstance(url: String): WebViewFragment = WebViewFragment().apply {
 			arguments = Bundle().apply {
 				putString("url", url)
 			}
@@ -317,7 +318,7 @@ class WebviewFragment : Fragment() {
 }
 
 private fun showToast(context: Context, message: String, duration: Int = Toast.LENGTH_SHORT) {
-	Log.d(WebviewFragment.TAG, message)
+	Log.d(WebViewFragment.TAG, message)
 	Toast.makeText(context, message, duration).show()
 }
 
