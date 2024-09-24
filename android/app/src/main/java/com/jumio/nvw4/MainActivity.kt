@@ -27,7 +27,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun showWebview(url: String) {
+    fun showWebView(url: String) {
         supportFragmentManager
             .beginTransaction()
             .replace(R.id.fragment_container, WebViewFragment.newInstance(url))
