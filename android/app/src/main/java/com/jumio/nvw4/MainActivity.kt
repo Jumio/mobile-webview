@@ -4,7 +4,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.jumio.nvw4.databinding.ActivityMainBinding
 import com.jumio.nvw4.fragments.SettingsFragment
-import com.jumio.nvw4.fragments.WebviewFragment
+import com.jumio.nvw4.fragments.WebViewFragment
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -30,7 +30,7 @@ class MainActivity : AppCompatActivity() {
     fun showWebview(url: String) {
         supportFragmentManager
             .beginTransaction()
-            .replace(R.id.fragment_container, WebviewFragment.newInstance(url))
+            .replace(R.id.fragment_container, WebViewFragment.newInstance(url))
             .addToBackStack("webview").commitAllowingStateLoss()
     }
 }

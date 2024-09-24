@@ -68,7 +68,7 @@ class SettingsFragment : Fragment() {
                     WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
                 )
 
-                (activity as MainActivity).showWebview(binding?.textinputedittextUrl?.text.toString())
+                (activity as MainActivity).showWebview(binding?.textinputedittextUrl?.text.toString().trim())
             }
         }
     }
