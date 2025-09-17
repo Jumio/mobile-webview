@@ -30,6 +30,7 @@ import android.webkit.WebViewClient
 import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -37,24 +38,16 @@ import androidx.fragment.app.Fragment
 import com.jumio.nvw4.databinding.FragmentWebviewBinding
 
 private const val FILE_PICKER_RETRIEVE_IMAGE_ERROR = "Failed to retrieve images"
+private const val TAG: String = "NVW4"
+private const val REQUEST_SELECT_FILE = 1002
 
 class WebViewFragment : Fragment() {
 	private var _binding: FragmentWebviewBinding? = null
+	private var uploadMessage: ValueCallback<Array<Uri>>? = null
 	private val binding get() = _binding!!
 
-	companion object {
-		var TAG: String = "NVW4"
-		var PERMISSION_REQUEST_CODE: Int = 1000
-		const val REQUEST_SELECT_FILE = 1002
-
-		var uploadMessage: ValueCallback<Array<Uri>>? = null
-
-		fun newInstance(url: String): WebViewFragment = WebViewFragment().apply {
-			arguments = Bundle().apply {
-				putString("url", url)
-			}
-		}
-	}
+	private val callback: FragmentCallback?
+		get() = context as? FragmentCallback
 
 	override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 		_binding = FragmentWebviewBinding.inflate(inflater, container, false)
@@ -84,10 +77,10 @@ class WebViewFragment : Fragment() {
 
 		binding.webview.webChromeClient = object : WebChromeClientFullScreen() {
 			// Grant permissions for camera
-			@TargetApi(Build.VERSION_CODES.M)
 			override fun onPermissionRequest(request: PermissionRequest) {
-				activity?.runOnUiThread {
-					if ("android.webkit.resource.VIDEO_CAPTURE" == request.resources[0]) {
+				val activity = activity ?: return
+				activity.runOnUiThread {
+					if (request.resources.contains("android.webkit.resource.VIDEO_CAPTURE")) {
 						if (ContextCompat.checkSelfPermission(
 								requireActivity(),
 								Manifest.permission.CAMERA
@@ -96,24 +89,15 @@ class WebViewFragment : Fragment() {
 							Log.d(TAG, String.format("PERMISSION REQUEST %s GRANTED", request.origin.toString()))
 							request.grant(request.resources)
 						} else {
-							val permissions = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-								arrayOf(
-									Manifest.permission.CAMERA,
-									Manifest.permission.READ_MEDIA_AUDIO,
-									Manifest.permission.READ_MEDIA_IMAGES,
-									Manifest.permission.READ_MEDIA_VIDEO,
-									Manifest.permission.MODIFY_AUDIO_SETTINGS,
-									Manifest.permission.RECORD_AUDIO,
-								)
-							} else {
-								arrayOf(Manifest.permission.CAMERA, Manifest.permission.READ_EXTERNAL_STORAGE)
-							}
-
-							ActivityCompat.requestPermissions(
-								requireActivity(),
-								permissions,
-								PERMISSION_REQUEST_CODE,
-							)
+							AlertDialog.Builder(activity)
+								.setCancelable(false)
+								.setTitle("Permissions Required")
+								.setMessage("Some permissions were permanently denied. Please enable them in Settings to use this app.")
+								.setPositiveButton("Cancel") { dialog, _ ->
+									callback?.backToSettings()
+									dialog.dismiss()
+								}
+								.show()
 						}
 					}
 				}
@@ -326,10 +310,18 @@ class WebViewFragment : Fragment() {
 			customViewCallback = null
 		}
 	}
+
+	companion object {
+		fun newInstance(url: String): WebViewFragment = WebViewFragment().apply {
+			arguments = Bundle().apply {
+				putString("url", url)
+			}
+		}
+	}
 }
 
 private fun showToast(context: Context, message: String, duration: Int = Toast.LENGTH_SHORT) {
-	Log.d(WebViewFragment.TAG, message)
+	Log.d(TAG, message)
 	Toast.makeText(context, message, duration).show()
 }
 
