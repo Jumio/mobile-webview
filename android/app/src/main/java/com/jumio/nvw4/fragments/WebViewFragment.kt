@@ -18,6 +18,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.ConsoleMessage
+import android.webkit.GeolocationPermissions
 import android.webkit.JavascriptInterface
 import android.webkit.PermissionRequest
 import android.webkit.SslErrorHandler
@@ -101,6 +102,24 @@ class WebViewFragment : Fragment() {
 						}
 					}
 				}
+			}
+
+			// Geolocation requested by the web-client via navigator.geolocation.getCurrentPosition.
+			// Coarse or fine location is enough; if neither is granted the request is denied and the web-client
+			// shows an error or lets the user proceed depending on the account's geolocation policy.
+			override fun onGeolocationPermissionsShowPrompt(
+				origin: String,
+				callback: GeolocationPermissions.Callback,
+			) {
+				val context = context ?: return callback.invoke(origin, false, false)
+				val granted = listOf(
+					Manifest.permission.ACCESS_COARSE_LOCATION,
+					Manifest.permission.ACCESS_FINE_LOCATION,
+				).any {
+					ContextCompat.checkSelfPermission(context, it) == PackageManager.PERMISSION_GRANTED
+				}
+				Log.d(TAG, "GEOLOCATION REQUEST $origin granted: $granted")
+				callback.invoke(origin, granted, false)
 			}
 
 			// For Lollipop 5.0+ Devices

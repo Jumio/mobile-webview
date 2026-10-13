@@ -48,5 +48,7 @@
 	</dict>
 	<key>NSCameraUsageDescription</key>
 	<string>App would like to access the camera to take a picutre of your ID</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>This will allow ${PRODUCT_NAME} to use your current location when app is in foreground.</string>
 </dict>
 </plist>
