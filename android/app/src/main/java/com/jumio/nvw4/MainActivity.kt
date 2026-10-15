@@ -21,7 +21,15 @@ class MainActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissionsRes
 	private lateinit var binding: ActivityMainBinding
 	private var requestedUrl: String= ""
 
-	val permissions = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+	// Location is requested together with the other permissions.
+	// the web-client decides whether to show an error or let the user proceed based on the account's geolocation policy.
+	// Coarse location is sufficient; fine location is optional for the user to grant.
+	private val locationPermissions = arrayOf(
+		Manifest.permission.ACCESS_COARSE_LOCATION,
+		Manifest.permission.ACCESS_FINE_LOCATION,
+	)
+
+	private val requiredPermissions = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
 		arrayOf(
 			Manifest.permission.CAMERA,
 			Manifest.permission.READ_MEDIA_AUDIO,
@@ -57,7 +65,7 @@ class MainActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissionsRes
 
 	override fun showWebViewOrRequestPermission(url: String) {
 		requestedUrl = url
-		val missingPermissions = checkMissingPermissions(permissions)
+		val missingPermissions = checkMissingPermissions(requiredPermissions + locationPermissions)
 		if (missingPermissions.isNotEmpty()) {
 			ActivityCompat.requestPermissions(this, missingPermissions, PERMISSION_REQUEST_CODE)
 		} else {
@@ -80,7 +88,7 @@ class MainActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissionsRes
 		if (requestCode == PERMISSION_REQUEST_CODE) {
 			val deniedPermissions = permissions.filterIndexed { index, _ ->
 				grantResults[index] != PackageManager.PERMISSION_GRANTED
-			}
+			}.filter { it !in locationPermissions }
 
 			if (deniedPermissions.isNotEmpty()) {
 				handleDeniedPermissions(deniedPermissions)
